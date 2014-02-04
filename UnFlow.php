@@ -47,6 +47,13 @@ $wgResourceModules['ext.UnFlow.indent'] = array(
 	'remoteExtPath' => 'UnFlow/modules',
 );
 
+$wgExtensionCredits['other'][] = array(
+	'path' => __FILE__,
+	'author' => array( 'Uncyclomedia Foundation' ),
+	'name' => 'UnFlow',
+	//'version' => '-1', @todo figure out if negative numbers break Special:Version
+);
+
 $wgExtensionMessagesFiles['UnFlow'] = __DIR__ . '/UnFlow.i18n.php';
 
 $wgAPIModules['newtopic'] = 'ApiNewTopic';
