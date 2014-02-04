@@ -1,0 +1,8 @@
+.mw-unpost-reply { /* one indentation level */
+	margin-left: 3em;
+}
+.mw-unpost-comment { /* one individual comment */
+	background-color: #EEE;
+	margin: 10px 0;
+	padding: 10px;
+}
