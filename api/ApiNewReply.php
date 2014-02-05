@@ -1,30 +1,38 @@
 <?php
 /**
- * API module to create new replies or edit them
+ * API module to create new replies or edit existing ones
  */
 class ApiNewReply extends ApiBase {
 	public function execute() {
 		$params = $this->extractRequestParams();
 
-		$replyTo = Title::makeTitle( NS_POST, $params['replyto'] );
-		if ( !$replyTo || !$replyTo->exists() ) {
-			// It could be a top level reply?
-			$replyTo2 = Title::makeTitle( NS_TOPIC, $params['replyto'] );
-			if ( !$replyTo2 || !$replyTo2->exists() ) {
-				$this->dieUsage( 'Invalid reply-to', 'invalid-reply-to' );
-			}
+		$title = Title::makeTitleSafe( NS_POST, $params['threadId'] );
+		if ( !$title || !$title->exists() ) {
+			$this->dieUsage( 'Invalid threadId provided', 'invalid-thread' );
 		}
 
-		$postId = UnFlow::getNewId( 'UnPost' );
-		$postTitle = Title::makeTitle( NS_POST, $postId );
-		$cont = new UnPostContent( $params['text'] );
-		$stat = UnFlow::makeEdit( $this, $postTitle, $cont, '', EDIT_NEW );
+		$thread = UnThread::newFromTitle( $title );
+		$post = UnThread::findPost( $thread, $params['postId'] );
+		if ( !$post ) {
+			$this->dieUsage( 'Invalid postId provided', 'invalid-postId' );
+		}
+
+		if ( !$params['edit'] ) {
+			$reply = UnPost::newPost( $params['text'], $this->getUser() );
+			$post->newReply( $reply );
+			$postId = $reply->getId();
+		} else {
+			$post->setText( $params['text'] );
+			$postId = $post->getId();
+		}
+
+		// Now saveeeeee
+		$flags = $this->getUser()->isAllowed( 'bot' ) ? EDIT_FORCE_BOT : 0;
+		$content = UnPostContent::newFromThread( $thread );
+		$stat = UnFlow::makeEdit( $this, $title, $content, '', $flags | EDIT_UPDATE );
 		if ( !$stat->isOK() ) {
 			$this->dieStatus( $stat );
 		}
-
-		// Woo! Update the db...
-		UnFlow::registerNewReply( $params['replyto'], $postId );
 
 		$this->getResult()->addValue(
 			null,
@@ -32,6 +40,7 @@ class ApiNewReply extends ApiBase {
 			array(
 				'result' => 'success',
 				'post-id' => $postId,
+				'thread-id' => $params['threadId'],
 			)
 		);
 	}
@@ -42,7 +51,11 @@ class ApiNewReply extends ApiBase {
 
 	public function getAllowedParams() {
 		return array(
-			'replyto' => array(
+			'threadId' => array(
+				ApiBase::PARAM_TYPE => 'string',
+				ApiBase::PARAM_REQUIRED => true,
+			),
+			'postId' => array(
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true,
 			),
@@ -50,13 +63,18 @@ class ApiNewReply extends ApiBase {
 				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_REQUIRED => true,
 			),
+			'edit' => array(
+				ApiBase::PARAM_TYPE => 'boolean',
+				ApiBase::PARAM_DFLT => false,
+			),
 			'token' => null,
 		);
 	}
 
 	public function getParamDescription() {
 		return array(
-			'replyto' => 'Post Id to reply to',
+			'threadId' => 'Thread Id',
+			'postId' => 'Post Id to reply to or edit',
 			'text' => 'Text of the message',
 			'token' => 'An edit token from action=tokens'
 		);

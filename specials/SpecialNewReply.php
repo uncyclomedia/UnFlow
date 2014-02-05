@@ -11,6 +11,9 @@ class SpecialNewReply extends FormSpecialPage {
 
 	protected function getFormFields() {
 		return array(
+			// Format is $threadId/$postId
+			// @todo in the future we should make this hidden
+			// and display the post the user is responding to
 			'replyto' => array(
 				'id' => 'mw-unflow-replyto',
 				'name' => 'replyTo',
@@ -34,11 +37,14 @@ class SpecialNewReply extends FormSpecialPage {
 	}
 
 	public function onSubmit( array $data ) {
+		$split = explode( '/', $data['replyto'] );
+		// @todo validate $split
 		$req = new DerivativeRequest(
 			$this->getRequest(),
 			array(
 				'action' => 'newreply',
-				'replyto' => $data['replyto'],
+				'threadId' => $split[0],
+				'postId' => $split[1],
 				'text' => $data['text'],
 				'token' => $this->getUser()->getEditToken()
 			),
@@ -54,11 +60,12 @@ class SpecialNewReply extends FormSpecialPage {
 
 	public function onSuccess() {
 		$postId = $this->result['newreply']['post-id'];
+		$threadId = $this->result['newreply']['thread-id'];
 		$title = Title::newFromText( $this->getRequest()->getVal( 'returnto' ) );
 		if ( $title ) {
 			$title->setFragment( $postId ); // @todo avoid using setFragment
 		} else {
-			$title = Title::makeTitle( NS_POST, $postId );
+			$title = Title::makeTitle( NS_POST, $threadId, $postId );
 		}
 		$this->getOutput()->redirect( $title->getFullURL() );
 

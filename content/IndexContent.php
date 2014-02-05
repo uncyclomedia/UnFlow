@@ -6,7 +6,7 @@
  * Schema looks something like:
  * [
  *  {
- *      'thread-id': $id,
+ *      'threadId': $id,
  *      'ts': timestamp
  *      'user': $username,
  *      'source': one of 'local', 'db', or 'api'
@@ -88,9 +88,6 @@ class IndexContent extends TextContent {
 	                                 $revId = null,
 	                                 ParserOptions $options = null, $generateHtml = true
 	) {
-		/** @var Parser $wgParser */
-		/** @var Language $wgLang */
-		global $wgParser, $wgLang;
 
 		if ( !$options ) {
 			//NOTE: use canonical options per default to produce cacheable output
@@ -98,20 +95,16 @@ class IndexContent extends TextContent {
 		}
 
 		$html = '';
-		$parserOutput = new ParserOutput();
+		$po = new ParserOutput();
 
 		if ( $generateHtml ) {
 			foreach ( $this->getJsonData() as $thread ) {
-				$thread = (array)$thread;
-				$html .= "<a name=\"{$thread['thread-id']}\"></a>";
-				$topicTitle = Title::makeTitle( NS_TOPIC, $thread['thread-id'] );
-				UnFlow::addTemplateLink( $parserOutput, $topicTitle, $title );
-				$content = Revision::newFromTitle( $topicTitle )->getContent();
-				$text = "== {$content->getNativeData()} =="; // @fixme find a better way to do this
-				$options->setEditSection( false ); // Don't create edit section links that don't work
-				$options->enableLimitReport( false );
-				$po = $wgParser->parse( $text, $title, $options, true, true );
-				$html .= '<div class=mw-thread-topic">' . $po->getText() . '</div>';
+				$threadTitle = Title::makeTitle( NS_POST, $thread->threadId );
+				$thread = UnThread::newFromTitle( $threadTitle );
+				$html .= $thread->toHtml( $title, $options );
+				$po->addTemplate( $threadTitle, $threadTitle->getArticleID(), $threadTitle->getLatestRevID() );
+				// @TODO add this in somehow
+/*				$html .= '<div class=mw-thread-topic">' . $po->getText() . '</div>';
 				$link = Linker::link(
 					SpecialPage::getTitleFor( 'NewReply', $thread['thread-id'] ),
 					wfMessage( 'unflow-reply' )->escaped()
@@ -122,22 +115,14 @@ class IndexContent extends TextContent {
 					->params( $wgLang->formatExpiry( $thread['ts'] ) )
 					->rawParams( $link )
 					->parse() . '</div>';
-				// Fetch the replies...
-				$html .= UnFlow::getChildrenHtml(
-					$thread['thread-id'],
-					$parserOutput,
-					$title,
-					$options,
-					$generateHtml
-				);
+*/
 			}
-
 		}
 
-		$parserOutput->setText( $html );
-		$parserOutput->recordOption( 'userlang' );
+		$po->setText( $html );
+		$po->recordOption( 'userlang' );
 
-		return $parserOutput;
+		return $po;
 	}
 
 
