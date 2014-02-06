@@ -16,6 +16,12 @@ $messages['en'] = array(
 	'unflow-newtopic-topic' => 'Topic',
 	'unflow-newtopic-text' => 'Body text',
 	'unflow-newtopic-invalidtitle' => 'Invalid title provided',
+	'unflow-toc-by' => 'by $1 on $2',
+	'unflow-toc-replies' => '$1 {{PLURAL:$1|reply|replies}}',
+	'unflow-toc-by-no-ts' => 'by $1',
+	'unflow-toc-header-topic' => 'Topic',
+	'unflow-toc-header-replies' => 'Replies',
+	'unflow-toc-header-lastedit' => 'Last edit', // @fixme "edit" isn't right
 
 );
 
@@ -31,5 +37,11 @@ $messages['qqq'] = array(
 	'unflow-newtopic-page' => 'Form label on special page',
 	'unflow-newtopic-topic' => 'Form label on special page',
 	'unflow-newtopic-text' => 'Form label on special page',
+	'unflow-toc-by' => 'Used below the topic link in the table of contents. $1 is a link to the user\'s userpage, $2 is a formatted date.',
+	'unflow-toc-replies' => '$1 is the number of replies the post has',
+	'unflow-toc-by-no-ts' => '$1 is a link to the user\'s userpage',
+	'unflow-toc-header-topic' => 'Header label for column on table',
+	'unflow-toc-header-replies' => 'Header label for column on table',
+	'unflow-toc-header-lastedit' => 'Header label for column on table', // @fixme "edit" isn't right
 
 );

@@ -80,6 +80,7 @@ $wgAutoloadClasses += array(
 	// UnThings
 	'UnFlow'               => __DIR__ . '/includes/UnFlow.php',
 	'UnHooks'              => __DIR__ . '/includes/UnHooks.php',
-	'UnPost'              => __DIR__ . '/includes/UnPost.php',
-	'UnThread'              => __DIR__ . '/includes/UnThread.php',
+	'UnPost'               => __DIR__ . '/includes/UnPost.php',
+	'UnThread'             => __DIR__ . '/includes/UnThread.php',
+	'UnTOC'                => __DIR__ . '/includes/UnTOC.php',
 );

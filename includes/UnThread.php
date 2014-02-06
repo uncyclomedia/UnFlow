@@ -5,6 +5,8 @@ class UnThread {
 	protected $id;
 	/** @var string $topic */
 	protected $topic;
+	/** @var string $parsedTopic */
+	protected $parsedTopic;
 	/** @var UnPost[] $replies */
 	protected $replies = array();
 
@@ -90,6 +92,62 @@ class UnThread {
 	}
 
 	/**
+	 * @fixme this whole thing is a terrible hack :((((((
+	 * @param Title $title
+	 * @param ParserOptions $opts
+	 * @return string HTML output
+	 */
+	public function getTopicHtml( Title $title, ParserOptions $opts ) {
+		if ( $this->parsedTopic ) {
+			return $this->parsedTopic;
+		}
+		global $wgParser;
+		$opts->setEditSection( false );
+		$opts->enableLimitReport( false );
+		// @fixme this is soooo terrible.
+		$text = "== {$this->getTopic()} ==";
+		$po = $wgParser->parse( $text, $title, $opts );
+		if ( $title->exists() ) {
+			// @fixme fix this.
+			DeferredUpdates::addUpdate( new LinksUpdate( $title, $po ) );
+		}
+		return $this->parsedTopic = $po->getText();
+	}
+
+	/**
+	 * @param UnPost|UnThread $thread
+	 * @return int
+	 */
+	public static function countReplies( $thread ) {
+		$count = count( $thread->getReplies() );
+		foreach( $thread->getReplies() as $reply ) {
+			$count += self::countReplies( $reply );
+		}
+
+		return $count;
+	}
+
+	/**
+	 * @param UnPost|UnThread $thread
+	 * @param UnPost|null $post
+	 * @return UnPost
+	 */
+	public static function findLatestReply( $thread, $post = null ) {
+		foreach ( $thread->getReplies() as $reply ) {
+			if ( !$post ) {
+				$post = $reply;
+			} elseif ( $reply->getTimestamp() > $post->getTimestamp() ) {
+				$post = $reply;
+			}
+
+			$post = self::findLatestReply( $reply, $post );
+		}
+
+
+		return $post;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getTopic() {
@@ -101,18 +159,10 @@ class UnThread {
 		/** @var Parser $wgParser */
 		global $wgParser;
 
-		$newOpts = clone $opts;
-		$newOpts->setEditSection( false );
-		$newOpts->enableLimitReport( false );
-		// @fixme this is soooo terrible.
-		$text = "== {$this->getTopic()} ==";
-		$po = $wgParser->parse( $text, $title, $newOpts );
-		if ( $title->exists() ) {
-			// @fixme fix this.
-			DeferredUpdates::addUpdate( new LinksUpdate( $title, $po ) );
-		}
+		//$opts = clone $opts;
+		$topic = $this->getTopicHtml( $title, $opts );
 		$html = "<a name=\"{$this->getId()}\"></a>";
-		$html .= '<div class="mw-thread-topic">' . $po->getText() . '</div>';
+		$html .= '<div class="mw-thread-topic">' . $topic . '</div>';
 		foreach( $this->getReplies() as $reply ) {
 			$html .= $reply->toHtml( $this, $title, $opts );
 		}

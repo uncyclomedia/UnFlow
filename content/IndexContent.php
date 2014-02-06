@@ -95,13 +95,16 @@ class IndexContent extends TextContent {
 		}
 
 		$html = '';
+		$toc = UnTOC::getHeader();
 		$po = new ParserOutput();
 
 		if ( $generateHtml ) {
-			foreach ( $this->getJsonData() as $thread ) {
-				$threadTitle = Title::makeTitle( NS_POST, $thread->threadId );
+			foreach ( $this->getJsonData() as $threadInfo ) {
+				$threadTitle = Title::makeTitle( NS_POST, $threadInfo->threadId );
 				$thread = UnThread::newFromTitle( $threadTitle );
 				$html .= $thread->toHtml( $title, $options );
+				$topicHtml = $thread->getTopicHtml( $title, $options );
+				$toc .= UnTOC::formatRow( $threadInfo, $thread, $topicHtml, $options->getUserLangObj() );
 				$po->addTemplate( $threadTitle, $threadTitle->getArticleID(), $threadTitle->getLatestRevID() );
 				// @TODO add this in somehow
 /*				$html .= '<div class=mw-thread-topic">' . $po->getText() . '</div>';
@@ -119,7 +122,7 @@ class IndexContent extends TextContent {
 			}
 		}
 
-		$po->setText( $html );
+		$po->setText( $toc . $html );
 		$po->recordOption( 'userlang' );
 
 		return $po;
