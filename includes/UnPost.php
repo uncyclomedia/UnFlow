@@ -79,11 +79,13 @@ class UnPost {
 		return $this->user;
 	}
 
-	protected function getReplyLink( UnThread $thread ) {
+	protected function getReplyLink( UnThread $thread, Title $title ) {
 		$subpage = $thread->getId() . '/' . $this->getId();
 		return Linker::link(
 			SpecialPage::getTitleFor( 'NewReply', $subpage ),
-			wfMessage( 'unflow-reply' )->escaped()
+			wfMessage( 'unflow-reply' )->escaped(),
+			array(),
+			array( 'returnto' => $title->getPrefixedText() )
 		);
 	}
 
@@ -116,7 +118,7 @@ class UnPost {
 		$html .= '<div class="mw-posted-by">' . wfMessage( 'unflow-posted-by' )
 				->rawParams( $this->getUser() )
 				->params( $lang->formatExpiry( $this->getTimestamp() ) )
-				->rawParams( $this->getReplyLink( $thread ) )
+				->rawParams( $this->getReplyLink( $thread, $title ) )
 				->parse() . '</div></div>' ;
 		// Now the replies!!
 		foreach( $this->getReplies() as $reply ) {
