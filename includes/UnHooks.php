@@ -38,6 +38,7 @@ class UnHooks {
 			|| $out->getTitle()->inNamespace( NS_POST )
 		) {
 			$out->addModuleStyles( 'ext.UnFlow.indent' );
+			$out->addModules( 'ext.UnFlow.reply' );
 		}
 
 		return true;

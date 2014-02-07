@@ -47,6 +47,18 @@ $wgResourceModules['ext.UnFlow.indent'] = array(
 	'remoteExtPath' => 'UnFlow/modules',
 );
 
+$wgResourceModules['ext.UnFlow.reply'] = array(
+	'scripts' => 'ext.UnFlow.reply.js',
+	'dependencies' => array(
+		'mediawiki.api',
+	),
+	'messages' => array(
+		'unflow-submit-reply',
+	),
+	'localBasePath' => __DIR__ . '/modules',
+	'remoteExtPath' => 'UnFlow/modules',
+);
+
 $wgExtensionCredits['other'][] = array(
 	'path' => __FILE__,
 	'author' => array( 'Uncyclomedia Foundation' ),

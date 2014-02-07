@@ -84,7 +84,11 @@ class UnPost {
 		return Linker::link(
 			SpecialPage::getTitleFor( 'NewReply', $subpage ),
 			wfMessage( 'unflow-reply' )->escaped(),
-			array(),
+			array(
+				'data-thread-id' => $thread->getId(),
+				'data-post-id' => $this->getId(),
+				'class' => 'mw-unflow-reply-link',
+			),
 			array( 'returnto' => $title->getPrefixedText() )
 		);
 	}

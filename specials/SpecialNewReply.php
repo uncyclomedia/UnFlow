@@ -9,6 +9,10 @@ class SpecialNewReply extends FormSpecialPage {
 		parent::__construct( 'NewReply' );
 	}
 
+	protected function alterForm( HTMLForm $form ) {
+		$form->setSubmitTextMsg( 'unflow-submit-reply' );
+	}
+
 	protected function getFormFields() {
 		return array(
 			// Format is $threadId/$postId
