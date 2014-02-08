@@ -28,7 +28,7 @@ class UnTOC {
 		$cleanedHtml = self::cleanUpThingy( $topicHtml );
 		$link = Html::rawElement( 'a', array( 'href' => "#{$thread->getId()}" ), $cleanedHtml );
 		$html = '<div class="mw-unflow-toc-line">';
-		$html .= '<div class="mw-unflow-toc-by-link">';
+		$html .= '<div class="mw-unflow-toc-topic">';
 		$html .= self::div( 'mw-unflow-toc-topic-link', $link );
 		$html .= self::div( 'mw-unflow-toc-by',
 			wfMessage( 'unflow-toc-by' )->rawParams(
