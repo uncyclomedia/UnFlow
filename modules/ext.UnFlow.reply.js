@@ -16,7 +16,6 @@
 				postId = $self.attr( 'data-post-id' ),
 				threadId = $self.attr( 'data-thread-id'),
 				$elem = $( '#reply-' + postId );
-			console.log(postId);
 
 			if ( !$elem.length ) {
 				$self.closest( '.mw-unpost-comment-container' ).after(
