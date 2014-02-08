@@ -28,6 +28,7 @@ class UnTOC {
 		$cleanedHtml = self::cleanUpThingy( $topicHtml );
 		$link = Html::rawElement( 'a', array( 'href' => "#{$thread->getId()}" ), $cleanedHtml );
 		$html = '<div class="mw-unflow-toc-line">';
+		$html .= '<div class="mw-unflow-toc-by-link">';
 		$html .= self::div( 'mw-unflow-toc-topic-link', $link );
 		$html .= self::div( 'mw-unflow-toc-by',
 			wfMessage( 'unflow-toc-by' )->rawParams(
@@ -35,12 +36,14 @@ class UnTOC {
 				$lang->formatExpiry( $data->ts )
 			)->escaped()
 		);
+		$html .= '</div>';
 		$html .= self::div( 'mw-unflow-toc-replies',
 			wfMessage( 'unflow-toc-replies' )->numParams(
 				UnThread::countReplies( $thread )
 			)->escaped()
 		);
 		$latest = UnThread::findLatestReply( $thread );
+		$html .= '<div class="mw-unflow-toc-latest">';
 		$html .= self::div( 'mw-unflow-toc-latest-ts', $lang->formatExpiry( $latest->getTimestamp() ) );
 		$user = $latest->getUser(); // @todo check for revdel here.
 		$html .= self::div( 'mw-unflow-toc-latest-user',
@@ -48,6 +51,7 @@ class UnTOC {
 				->rawParams( Linker::userLink( $user->getId(), $user->getName() ) )
 				->escaped()
 		);
+		$html .= '</div>';
 		$html .= '</div>';
 		return $html;
 	}
