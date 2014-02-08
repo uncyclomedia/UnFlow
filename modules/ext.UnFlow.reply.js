@@ -1,8 +1,10 @@
 ( function ( mw, $ ) {
-	function getHtml() {
+	function getHtml( postId ) {
 		return '<textarea class="mw-unpost-text"></textarea>' +
 			'<button class="mw-unpost-button-reply">' +
 			mw.message( 'unflow-submit-reply' ).text() +
+			'</button>' + '<button class="mw-unpost-button-cancel">' +
+			mw.message( 'unflow-submit-cancel' ).text() +
 			'</button>';
 	}
 
@@ -10,13 +12,22 @@
 		'use strict';
 		$( '.mw-unflow-reply-link' ).click( function( e ) {
 			e.preventDefault();
-			var $self = $( this );
-			$self.closest( '.mw-unpost-comment-container' ).after(
-				$( '<div class="mw-unpost-reply">' )
-					.html( getHtml() )
-					.attr( 'data-thread-id', $self.attr( 'data-thread-id' ) )
-					.attr( 'data-post-id', $self.attr( 'data-post-id' ) )
-			);
+			var $self = $( this ),
+				postId = $self.attr( 'data-post-id' ),
+				threadId = $self.attr( 'data-thread-id'),
+				$elem = $( '#reply-' + postId );
+			console.log(postId);
+
+			if ( !$elem.length ) {
+				$self.closest( '.mw-unpost-comment-container' ).after(
+					$( '<div id="reply-' + postId + '" class="mw-unpost-reply">' )
+						.html( getHtml( postId ) )
+						.attr( 'data-thread-id', threadId )
+						.attr( 'data-post-id', postId )
+				);
+			} else {
+				$elem.show();
+			}
 
 			$( '.mw-unpost-button-reply' ).click( function( e ) {
 				e.preventDefault();
@@ -33,6 +44,11 @@
 						// @todo something here...
 					} );
 			});
+
+			$( '.mw-unpost-button-cancel').click( function( e ) {
+				e.preventDefault();
+				$( this ).closest( '.mw-unpost-reply' ).hide();
+			})
 
 		});
 	});

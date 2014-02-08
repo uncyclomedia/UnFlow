@@ -54,6 +54,7 @@ $wgResourceModules['ext.UnFlow.reply'] = array(
 	),
 	'messages' => array(
 		'unflow-submit-reply',
+		'unflow-submit-cancel',
 	),
 	'localBasePath' => __DIR__ . '/modules',
 	'remoteExtPath' => 'UnFlow/modules',
