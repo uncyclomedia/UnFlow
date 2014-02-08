@@ -95,36 +95,38 @@ class IndexContent extends TextContent {
 		}
 
 		$html = '';
-		$toc = UnTOC::getHeader();
+		$toc = $generateHtml ? UnTOC::getHeader() : '';
 		$po = new ParserOutput();
 
-		if ( $generateHtml ) {
-			foreach ( $this->getJsonData() as $threadInfo ) {
-				$threadTitle = Title::makeTitle( NS_POST, $threadInfo->threadId );
+		foreach ( $this->getJsonData() as $threadInfo ) {
+			$threadTitle = Title::makeTitle( NS_POST, $threadInfo->threadId );
+			if ( $generateHtml ) {
 				$thread = UnThread::newFromTitle( $threadTitle );
 				$html .= $thread->toHtml( $title, $options );
 				$topicHtml = $thread->getTopicHtml( $title, $options );
 				$toc .= UnTOC::formatRow( $threadInfo, $thread, $topicHtml, $options->getUserLangObj() );
-				$po->addTemplate( $threadTitle, $threadTitle->getArticleID(), $threadTitle->getLatestRevID() );
-				// @TODO add this in somehow
-/*				$html .= '<div class=mw-thread-topic">' . $po->getText() . '</div>';
-				$link = Linker::link(
-					SpecialPage::getTitleFor( 'NewReply', $thread['thread-id'] ),
-					wfMessage( 'unflow-reply' )->escaped()
-				);
-
-				$html .= '<div class="mw-thread-posted-by">' . wfMessage( 'unflow-thread-posted-by' )
-					->rawParams( UnFlow::userToolLinks( User::newFromName( $thread['user'] ) ) )
-					->params( $wgLang->formatExpiry( $thread['ts'] ) )
-					->rawParams( $link )
-					->parse() . '</div>';
-*/
 			}
+			$po->addTemplate( $threadTitle, $threadTitle->getArticleID(), $threadTitle->getLatestRevID() );
+			// @TODO add this in somehow
+/*				$html .= '<div class=mw-thread-topic">' . $po->getText() . '</div>';
+			$link = Linker::link(
+				SpecialPage::getTitleFor( 'NewReply', $thread['thread-id'] ),
+				wfMessage( 'unflow-reply' )->escaped()
+			);
+
+			$html .= '<div class="mw-thread-posted-by">' . wfMessage( 'unflow-thread-posted-by' )
+				->rawParams( UnFlow::userToolLinks( User::newFromName( $thread['user'] ) ) )
+				->params( $wgLang->formatExpiry( $thread['ts'] ) )
+				->rawParams( $link )
+				->parse() . '</div>';
+*/
 		}
 
 		$po->setText( $toc . $html );
 		$po->recordOption( 'userlang' );
 
+		// @fixme shouldn't this happen automatically???
+		UnFlow::addLinksUpdate( $title, $po );
 		return $po;
 	}
 

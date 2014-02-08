@@ -107,10 +107,8 @@ class UnThread {
 		// @fixme this is soooo terrible.
 		$text = "== {$this->getTopic()} ==";
 		$po = $wgParser->parse( $text, $title, $opts );
-		if ( $title->exists() ) {
-			// @fixme fix this.
-			DeferredUpdates::addUpdate( new LinksUpdate( $title, $po ) );
-		}
+		UnFlow::addLinksUpdate( $title, $po );
+
 		return $this->parsedTopic = $po->getText();
 	}
 

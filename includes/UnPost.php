@@ -112,10 +112,7 @@ class UnPost {
 		$po = $wgParser->parse( $this->text, $title, $opts );
 		// Because we don't use the ParserOutput past this function,
 		// we need to do the LinksUpdates semi-manually
-		if ( $title->exists() ) {
-			// @fixme this should run when creating a new page too
-			DeferredUpdates::addUpdate( new LinksUpdate( $title, $po ) );
-		}
+		UnFlow::addLinksUpdate( $title, $po );
 
 		$html = "<div class=\"mw-unpost-comment-container\">";
 		$html .= "<a name=\"{$this->getId()}\"></a><div class=\"mw-unpost-comment\">{$po->getText()}</div>";

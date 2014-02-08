@@ -12,6 +12,19 @@ class UnFlow {
 	}
 
 	/**
+	 * We need to delay the creation of the LinksUpdate object
+	 * since our page might not exist yet
+	 * @param Title $title
+	 * @param ParserOutput $po
+	 */
+	public static function addLinksUpdate( Title $title, ParserOutput $po ) {
+		DeferredUpdates::addCallableUpdate( function() use ( $title, $po ) {
+			$lu = new LinksUpdate( $title, $po );
+			$lu->doUpdate();
+		});
+	}
+
+	/**
 	 * @todo Do something else here.
 	 * @return BagOStuff
 	 */
