@@ -24,6 +24,12 @@ class ApiNewTopic extends ApiBase {
 			$this->dieStatus( $stat );
 		}
 
+		if ( $title->exists() ) {
+			/** @var IndexContent $content */
+			$content = Revision::newFromTitle( $title )->getContent();
+			$json = $content->getJsonData();
+		}
+
 		$json[] = array(
 			'threadId' => $thread->getId(),
 			'user' => $user->getName(),
