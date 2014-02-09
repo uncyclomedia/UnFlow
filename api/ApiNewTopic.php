@@ -12,7 +12,7 @@ class ApiNewTopic extends ApiBase {
 		}
 
 		$thread = UnThread::newThread( $params['topic'] );
-		$post = UnPost::newPost( $params['text'], $this->getUser() );
+		$post = UnPost::newPost( $params['text'] );
 		$thread->newReply( $post );
 
 		$flags = $user->isAllowed( 'bot' ) ? EDIT_FORCE_BOT : 0;

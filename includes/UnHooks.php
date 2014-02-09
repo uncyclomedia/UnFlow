@@ -44,4 +44,57 @@ class UnHooks {
 		return true;
 	}
 
+	/**
+	 * Occurs after the save page request has been processed.
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageContentSaveComplete
+	 *
+	 * @param WikiPage $article
+	 * @param User $user
+	 * @param Content $content
+	 * @param string $summary
+	 * @param boolean $isMinor
+	 * @param boolean $isWatch
+	 * @param $section
+	 * @param integer $flags
+	 * @param Revision $revision
+	 * @param Status $status
+	 * @param integer $baseRevId
+	 * @return boolean
+	 */
+	public static function onPageContentSaveComplete( $article, $user, $content, $summary,
+	                                                  $isMinor, $isWatch, $section, $flags, $revision, $status, $baseRevId ) {
+		if ( !$article->getTitle()->inNamespace( NS_POST ) ) {
+			return true;
+		}
+
+		/** @var UnPostContent $content */
+		$thread = $content->getThread();
+		$newIds = UnThread::getAllIds( $thread );
+		if ( $baseRevId ) {
+			/** @var UnPostContent $oldContent */
+			$oldContent = Revision::newFromId( $baseRevId )->getContent( Revision::RAW );
+			$oldIds = UnThread::getAllIds( $oldContent->getThread() );
+		} else {
+			$oldIds = array();
+		}
+
+		$reallyNewIds = array_diff( $newIds, $oldIds );
+		if ( $reallyNewIds ) {
+			$rows = array();
+			foreach( $reallyNewIds as $id ) {
+				$rows[] = array(
+					'upa_post' => $id,
+					'upa_revid' => $revision->getId(),
+				);
+			}
+			wfGetDB( DB_MASTER )->insert(
+				'unpost_revids',
+				$rows,
+				__METHOD__
+			);
+		}
+
+		return true;
+	}
+
 }

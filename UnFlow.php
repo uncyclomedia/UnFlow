@@ -39,6 +39,11 @@ $wgNamespaceContentModels[NS_POST] = 'UnPostContent';
 $wgHooks['CanonicalNamespaces'][] = 'UnHooks::onCanonicalNamespaces';
 $wgHooks['BeforePageDisplay'][] = 'UnHooks::onBeforePageDisplay';
 $wgHooks['ContentHandlerDefaultModelFor'][] = 'UnHooks::onContentHandlerDefaultModelFor';
+$wgHooks['PageContentSaveComplete'][] = 'UnHooks::onPageContentSaveComplete';
+$wgHooks['LoadExtensionSchemaUpdates'][] = function( DatabaseUpdater $upd ) {
+	$upd->addExtensionTable( 'unpost_revids', __DIR__ . '/tables.sql' );
+	return true;
+};
 
 $wgResourceModules['ext.UnFlow.indent'] = array(
 	'styles' => 'ext.UnFlow.indent.css',

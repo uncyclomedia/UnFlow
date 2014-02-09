@@ -72,4 +72,33 @@ class UnFlow {
 			|| in_array( $title->getPrefixedText(), $wgUnFlowPages ) );
 	}
 
+	public static function batchLoadThread( UnThread $thread ) {
+		$dbr = wfGetDB( DB_SLAVE );
+		$select = array_merge( Revision::selectFields(), array( 'upa_post' ) );
+
+		$ids = UnThread::getAllIds( $thread );
+		$count = count( $ids );
+		if ( $count > 1 ) {
+			$conds = $dbr->makeList( $ids, LIST_OR );
+		} elseif( $count == 1 ) {
+			$conds = $ids[0];
+		} else {
+			return;
+		}
+
+		$rows = $dbr->select(
+			array( 'revision', 'unpost_revids' ),
+			$select,
+			array( 'upa_post' => $conds ),
+			__METHOD__,
+			array(),
+			array( 'unpost_revids' => array( 'JOIN', 'upa_revid = rev_id' ) )
+		);
+
+		foreach( $rows as $row ) {
+			UnThread::findPost( $thread, $row->upa_post )
+				->setRev( Revision::newFromRow( $row ) );
+		}
+	}
+
 }

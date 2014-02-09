@@ -3,19 +3,39 @@
 class UnPost {
 	protected $id;
 	/** @var User $user */
-	protected $user;
+	protected $user = false;
 	protected $text;
 	protected $ts;
+	/** @var Revision $rev */
+	protected $rev;
 	/** @var UnPost[] $replies */
 	protected $replies = array();
 
-	public static function newPost( $text, User $user ) {
+	public static function newPost( $text ) {
 		$p = new UnPost;
 		$p->id = UnFlow::getNewId( __CLASS__ );
 		$p->text = $text;
-		$p->user = $user;
 		$p->ts = wfTimestampNow();
 		return $p;
+	}
+
+	/**
+	 * @param Revision|int $id
+	 */
+	public function setRev( $id ) {
+		if ( $id instanceof Revision ) {
+			$this->rev = $id;
+		} else {
+			$this->rev = Revision::newFromId( $id );
+		}
+	}
+
+	/**
+	 * @todo load from the db if not set
+	 * @return Revision
+	 */
+	public function getRev() {
+		return $this->rev;
 	}
 
 	public function newReply( UnPost $post ) {
@@ -34,7 +54,6 @@ class UnPost {
 		$arr = array(
 			'id' => $this->id,
 			'text' => $this->text,
-			'user' => $this->user->getName(),
 			'ts' => $this->ts,
 			'cmts' => array(),
 		);
@@ -54,7 +73,7 @@ class UnPost {
 		$p->id = $obj->id;
 		$p->text = $obj->text;
 		$p->ts = $obj->ts;
-		$p->user = User::newFromName( $obj->user, false );
+
 		foreach( $obj->cmts as $cmt ) {
 			$p->replies[] = UnPost::newFromJSON( $cmt );
 		}
@@ -73,9 +92,19 @@ class UnPost {
 	/**
 	 * @fixme implement proper revdel
 	 * @param int $vis Revision visibility constant
-	 * @return User
+	 * @param User|null $user
+	 * @return User|null
 	 */
-	public function getUser( $vis = Revision::FOR_PUBLIC ) {
+	public function getUser( $vis = Revision::FOR_PUBLIC, $user = null ) {
+		if ( $this->user === false ) {
+			if ( !$this->getRev() ) {
+				// ??? We're probably trying to save the page...
+				// something something globals are evil meh
+				return $this->user = $GLOBALS['wgUser'];
+			}
+			$name = $this->getRev()->getUserText( $vis, $user );
+			$this->user = $name ? User::newFromName( $name, false ) : null;
+		}
 		return $this->user;
 	}
 
@@ -95,6 +124,17 @@ class UnPost {
 
 	public function getTimestamp() {
 		return $this->ts;
+	}
+
+	protected function getUserToolLinks() {
+		$user = $this->getUser();
+		if ( $user ) {
+			$text = UnFlow::userToolLinks( $user );
+		} else {
+			$text = wfMessage( 'rev-deleted-user' )->escaped();
+		}
+
+		return $text;
 	}
 
 	/**
@@ -117,7 +157,7 @@ class UnPost {
 		$html = "<div class=\"mw-unpost-comment-container\">";
 		$html .= "<a name=\"{$this->getId()}\"></a><div class=\"mw-unpost-comment\">{$po->getText()}</div>";
 		$html .= '<div class="mw-posted-by">' . wfMessage( 'unflow-posted-by' )
-				->rawParams( $this->getUser() )
+				->rawParams( $this->getUserToolLinks() )
 				->params( $lang->formatExpiry( $this->getTimestamp() ) )
 				->rawParams( $this->getReplyLink( $thread, $title ) )
 				->parse() . '</div></div>' ;

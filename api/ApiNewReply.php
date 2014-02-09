@@ -18,7 +18,7 @@ class ApiNewReply extends ApiBase {
 		}
 
 		if ( !$params['edit'] ) {
-			$reply = UnPost::newPost( $params['text'], $this->getUser() );
+			$reply = UnPost::newPost( $params['text'] );
 			$post->newReply( $reply );
 			$postId = $reply->getId();
 		} else {

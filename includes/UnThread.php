@@ -146,6 +146,20 @@ class UnThread {
 	}
 
 	/**
+	 * @param UnPost|UnThread $thread
+	 * @return array
+	 */
+	public static function getAllIds( $thread ) {
+		$ids = array();
+		foreach( $thread->getReplies() as $reply ) {
+			$ids[] = $reply->getId();
+			$ids = array_merge( $ids, self::getAllIds( $reply ) );
+		}
+
+		return $ids;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getTopic() {
@@ -154,13 +168,12 @@ class UnThread {
 
 	public function toHtml( Title $title, ParserOptions $opts ) {
 		wfProfileIn( __METHOD__ );
-		/** @var Parser $wgParser */
-		global $wgParser;
 
 		//$opts = clone $opts;
 		$topic = $this->getTopicHtml( $title, $opts );
 		$html = "<a name=\"{$this->getId()}\"></a>";
 		$html .= '<div class="mw-thread-topic">' . $topic . '</div>';
+		UnFlow::batchLoadThread( $this ); // Batch load revision info for revdel
 		foreach( $this->getReplies() as $reply ) {
 			$html .= $reply->toHtml( $this, $title, $opts );
 		}

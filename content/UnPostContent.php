@@ -9,7 +9,6 @@
  *      {
  *          'id': UnPost####,
  *          'text': text,
- *          'user': username/IP,
  *          'ts': db timestamp,
  *          'cmts': [ ... ]
  *      },
@@ -23,6 +22,9 @@ class UnPostContent extends TextContent {
 	 * @var bool|stdClass
 	 */
 	protected $json = false;
+
+	/** @var bool|UnThread */
+	protected $thread = false;
 
 	public function __construct( $text = '' ) {
 		parent::__construct( $text, 'UnPostContent' );
@@ -43,7 +45,10 @@ class UnPostContent extends TextContent {
 	 * @return UnThread
 	 */
 	public function getThread() {
-		return UnThread::newFromJSON( $this->getJsonData() );
+		if ( $this->thread === false ) {
+			$this->thread = UnThread::newFromJSON( $this->getJsonData() );
+		}
+		return $this->thread;
 	}
 
 	/**
