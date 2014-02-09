@@ -38,7 +38,6 @@ $wgNamespaceContentModels[NS_POST] = 'UnPostContent';
 
 $wgHooks['CanonicalNamespaces'][] = 'UnHooks::onCanonicalNamespaces';
 $wgHooks['BeforePageDisplay'][] = 'UnHooks::onBeforePageDisplay';
-$wgHooks['ArticleRevisionVisibilitySet'][] = 'UnHooks::onArticleRevisionVisibilitySet';
 $wgHooks['ContentHandlerDefaultModelFor'][] = 'UnHooks::onContentHandlerDefaultModelFor';
 
 $wgResourceModules['ext.UnFlow.indent'] = array(

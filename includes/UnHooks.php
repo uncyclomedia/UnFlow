@@ -44,17 +44,4 @@ class UnHooks {
 		return true;
 	}
 
-	/**
-	 * This function is a bit over-agressive in clearing the cache, but
-	 * will have to do until bug 58596 is fixed.
-	 * @param Title $title
-	 * @return bool
-	 */
-	public static function onArticleRevisionVisibilitySet( Title &$title ) {
-		if ( $title->inNamespace( NS_POST ) ) {
-			UnFlow::getCache()->delete( wfMemcKey( 'unflow', 'creator', $title->getRootText() ) );
-		}
-
-		return true;
-	}
 }
