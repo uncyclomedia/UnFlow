@@ -64,7 +64,7 @@ $wgExtensionCredits['other'][] = array(
 	'path' => __FILE__,
 	'author' => array( 'Uncyclomedia Foundation' ),
 	'name' => 'UnFlow',
-	//'version' => '-1', @todo figure out if negative numbers break Special:Version
+	'version' => '-1',
 );
 
 $wgExtensionMessagesFiles['UnFlow'] = __DIR__ . '/UnFlow.i18n.php';
