@@ -70,9 +70,10 @@ class UnHooks {
 		/** @var UnPostContent $content */
 		$thread = $content->getThread();
 		$newIds = UnThread::getAllIds( $thread );
-		if ( $baseRevId ) {
+		$parent = $revision->getParentId();
+		if ( $parent ) {
 			/** @var UnPostContent $oldContent */
-			$oldContent = Revision::newFromId( $baseRevId )->getContent( Revision::RAW );
+			$oldContent = Revision::newFromId( $parent )->getContent( Revision::RAW );
 			$oldIds = UnThread::getAllIds( $oldContent->getThread() );
 		} else {
 			$oldIds = array();

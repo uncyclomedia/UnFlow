@@ -73,28 +73,30 @@ class UnFlow {
 	}
 
 	public static function batchLoadThread( UnThread $thread ) {
-		$dbr = wfGetDB( DB_SLAVE );
+		$section = new ProfileSection( __METHOD__ );
 		$select = array_merge( Revision::selectFields(), array( 'upa_post' ) );
 
 		$ids = UnThread::getAllIds( $thread );
-		$count = count( $ids );
-		if ( $count > 1 ) {
-			$conds = $dbr->makeList( $ids, LIST_OR );
-		} elseif( $count == 1 ) {
-			$conds = $ids[0];
-		} else {
+		if ( !$ids ) {
 			return;
+		}
+		$dbr = wfGetDB( DB_SLAVE );
+		$conds = array();
+		foreach( $ids as $id ) {
+			$conds[] = 'upa_post = ' . $dbr->addQuotes( $id );
+		}
+		if ( count( $conds ) > 1 ) {
+			$conds = $dbr->makeList( $conds, LIST_OR );
 		}
 
 		$rows = $dbr->select(
 			array( 'revision', 'unpost_revids' ),
 			$select,
-			array( 'upa_post' => $conds ),
+			$conds,
 			__METHOD__,
 			array(),
-			array( 'unpost_revids' => array( 'JOIN', 'upa_revid = rev_id' ) )
+			array( 'revision' => array( 'JOIN', 'upa_revid = rev_id' ) )
 		);
-
 		foreach( $rows as $row ) {
 			UnThread::findPost( $thread, $row->upa_post )
 				->setRev( Revision::newFromRow( $row ) );
