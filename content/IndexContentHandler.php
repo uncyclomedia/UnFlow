@@ -28,4 +28,8 @@ class IndexContentHandler extends TextContentHandler {
 		$options->getUserLangObj(); // Split parser cache by user language
 		return $options;
 	}
+
+	protected function getDiffEngineClass() {
+		return 'IndexDifferenceEngine';
+	}
 }
