@@ -25,6 +25,7 @@ $messages['en'] = array(
 	'unflow-toc-header-replies' => 'Replies',
 	'unflow-toc-header-lastedit' => 'Last edit', // @fixme "edit" isn't right
 	'unflow-diff-new-reply' => 'New reply by $1:',
+	'unflow-diff-edit' => 'Reply by $1:',
 
 );
 
@@ -49,4 +50,5 @@ $messages['qqq'] = array(
 	'unflow-toc-header-replies' => 'Header label for column on table',
 	'unflow-toc-header-lastedit' => 'Header label for column on table', // @fixme "edit" isn't right
 	'unflow-diff-new-reply' => 'Header used for diff, $1 is the name of the user who posted it.',
+	'unflow-diff-edit' => 'Header used for diff, $1 is the name of the user who\'s post is being edited'
 );
