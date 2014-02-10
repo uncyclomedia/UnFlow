@@ -19,6 +19,10 @@ class UnPost {
 		return $p;
 	}
 
+	public function getText() {
+		return $this->text;
+	}
+
 	/**
 	 * @param Revision|int $id
 	 */

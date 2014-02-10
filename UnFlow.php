@@ -94,6 +94,7 @@ $wgAutoloadClasses += array(
 	'UnPostContentHandler' => __DIR__ . '/content/UnPostContentHandler.php',
 	'IndexContent'         => __DIR__ . '/content/IndexContent.php',
 	'IndexContentHandler'  => __DIR__ . '/content/IndexContentHandler.php',
+	'UnDifferenceEngine'   => __DIR__ . '/content/UnDifferenceEngine.php',
 
 	// UnThings
 	'UnFlow'               => __DIR__ . '/includes/UnFlow.php',

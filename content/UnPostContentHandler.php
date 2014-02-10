@@ -44,5 +44,8 @@ class UnPostContentHandler extends TextContentHandler {
 		return true;
 	}
 
+	protected function getDiffEngineClass() {
+		return 'UnDifferenceEngine';
+	}
 
 }
