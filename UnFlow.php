@@ -55,6 +55,7 @@ $wgResourceModules['ext.UnFlow.reply'] = array(
 	'scripts' => 'ext.UnFlow.reply.js',
 	'dependencies' => array(
 		'mediawiki.api',
+		'mediawiki.Uri',
 	),
 	'messages' => array(
 		'unflow-submit-reply',

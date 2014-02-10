@@ -40,7 +40,11 @@
 					token: mw.user.tokens.get( 'editToken' )
 				} )
 					.done( function( data ) {
-						// @todo something here...
+						var uri = new mw.Uri( window.location.href );
+						uri.extend( { action: 'purge' } ); // @fixme this is bad
+						uri.fragment = data.newreply['post-id'];
+						console.log(uri.toString());
+						window.location.href = uri.toString();
 					} );
 			});
 
