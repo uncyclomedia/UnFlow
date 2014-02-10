@@ -82,7 +82,6 @@ class UnDifferenceEngine extends DifferenceEngine {
 			$newPost = UnThread::findPost( $new, $id );
 			if ( $newPost->getText() !== $oldPost->getText() ) {
 				$text = $this->generateTextDiffBody( $oldPost->getText(), $newPost->getText() );
-				// @fixme set a custom header here.
 				$user = $newPost->getUser();
 				if ( $user ) {
 					$userName = $user->getName();
