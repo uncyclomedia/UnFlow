@@ -1,6 +1,17 @@
 <?php
 
+/**
+ * Manage our own version too
+ * @var int
+ */
+define( 'UNDIFF_VERSION', 1 );
+
 class UnDifferenceEngine extends DifferenceEngine {
+
+	public $enableDebugComment = true;
+
+	protected $mReducedLineNumbers = true;
+
 	/**
 	 * @param UnPostContent $old
 	 * @param UnPostContent $new
@@ -19,5 +30,9 @@ class UnDifferenceEngine extends DifferenceEngine {
 		$newPost = UnThread::findPost( $newThread, $newIds[0] );
 		// @todo We should add custom headers here.
 		return $this->generateTextDiffBody( '', $newPost->getText() );
+	}
+
+	protected function getDiffBodyCacheKey() {
+		return parent::getDiffBodyCacheKey() . ':' . UNDIFF_VERSION;
 	}
 }
