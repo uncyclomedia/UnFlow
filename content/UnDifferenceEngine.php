@@ -20,9 +20,4 @@ class UnDifferenceEngine extends DifferenceEngine {
 		// @todo We should add custom headers here.
 		return $this->generateTextDiffBody( '', $newPost->getText() );
 	}
-
-	protected function getDiffBodyCacheKey() {
-		return MWCryptRand::generateHex( 5 );
-	}
-
 }
