@@ -80,19 +80,11 @@ class UnFlow {
 		if ( !$ids ) {
 			return;
 		}
-		$dbr = wfGetDB( DB_SLAVE );
-		$conds = array();
-		foreach( $ids as $id ) {
-			$conds[] = 'upa_post = ' . $dbr->addQuotes( $id );
-		}
-		if ( count( $conds ) > 1 ) {
-			$conds = $dbr->makeList( $conds, LIST_OR );
-		}
 
-		$rows = $dbr->select(
+		$rows = wfGetDB( DB_SLAVE )->select(
 			array( 'revision', 'unpost_revids' ),
 			$select,
-			$conds,
+			array( 'upa_post' => $ids ),
 			__METHOD__,
 			array(),
 			array( 'revision' => array( 'JOIN', 'upa_revid = rev_id' ) )
