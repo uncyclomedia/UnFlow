@@ -17,6 +17,23 @@ class UnThread {
 		return $t;
 	}
 
+	/**
+	 * @param string $id
+	 * @return string
+	 */
+	public static function getTopicFor( $id ) {
+		$cache = UnFlow::getCache();
+		$key = wfMemcKey( 'unflow', 'topic', $id );
+		$data = $cache->get( $key );
+		if ( $data === false ) {
+			$thread = self::newFromTitle( Title::makeTitle( NS_POST, $id ) );
+			$data = $thread->getTopic();
+			$cache->set( $key, $data );
+		}
+
+		return $data;
+	}
+
 	/*
 	 * Assumes a valid title is provided that already exists
 	 * @param Title $title

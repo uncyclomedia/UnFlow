@@ -95,6 +95,10 @@ class UnHooks {
 			);
 		}
 
+		// Update cache...
+		$key = wfMemcKey( 'unflow', 'topic', $thread->getId() );
+		UnFlow::getCache()->set( $key, $thread->getTopic() );
+
 		return true;
 	}
 
